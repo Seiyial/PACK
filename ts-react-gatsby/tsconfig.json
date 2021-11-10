@@ -1,0 +1,15 @@
+{
+	"include": [
+		"./src"
+	],
+	"compilerOptions": {
+		"jsx": "react",
+		"esModuleInterop": true,
+		"strictNullChecks": true,
+		"strict": true,
+		"baseUrl": "./src"
+	},
+	"exclude": [
+		"node_modules"
+	]
+}

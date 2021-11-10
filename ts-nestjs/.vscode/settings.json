@@ -1,4 +1,5 @@
 {
+	"vikings-icon-theme.activeIconPack": "nest",
 	"vikings-icon-theme.files.associations": {
 		"*.controller.ts": "nest-controller",
 		"*.service.ts": "nest-service",

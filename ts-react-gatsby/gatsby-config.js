@@ -12,6 +12,7 @@ module.exports = {
         resolveModules: [path.join(__dirname, 'src')],
       },
     },
+    "gatsby-plugin-sass",
     "gatsby-plugin-typescript",
     "gatsby-plugin-emotion",
     "gatsby-plugin-image",

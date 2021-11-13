@@ -39,5 +39,6 @@
     "gatsby-plugin-typescript": "^4.1.0",
     "normalize.css": "8.0.1",
     "sass": "1.43.4"
-  }
+  },
+  "packageManager": "yarn@3.1.0"
 }

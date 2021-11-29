@@ -14,7 +14,7 @@ module.exports = {
     },
     "gatsby-plugin-sass",
     "gatsby-plugin-typescript",
-    "gatsby-plugin-emotion",
+    "gatsby-plugin-linaria", // must be AFTER typescript https://www.npmjs.com/package/gatsby-plugin-linaria
     "gatsby-plugin-image",
     "gatsby-plugin-react-helmet",
     "gatsby-plugin-sitemap",

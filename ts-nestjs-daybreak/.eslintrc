@@ -1,0 +1,3 @@
+{
+	"extends": "@syxdaybreak/eslint-config/with-react"
+}

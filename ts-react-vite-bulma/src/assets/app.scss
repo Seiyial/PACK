@@ -1,0 +1,25 @@
+// emotion css supported.
+
+@import '@fontsource/oxygen/300.css';
+@import '@fontsource/oxygen/400.css';
+@import '@fontsource/oxygen/700.css';
+
+$family-sans-serif: 'Oxygen', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+  'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+  'Noto Color Emoji';
+
+@import "normalize.css/normalize.css";
+@import "bulma/bulma.sass";
+
+html, body {
+	margin: 0;
+	padding: 0;
+	min-height: 100%;
+	height: 100%;
+	min-width: 100%;
+	overflow: auto;
+}
+p, h1, h2, h3, h4, h5, h6 {
+	margin: 0;
+	padding: 0;
+}

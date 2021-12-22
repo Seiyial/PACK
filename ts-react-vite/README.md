@@ -1,3 +1,4 @@
+Template last updated: 23 Dec 2021
 
 # Yay. Vite starter.
 
@@ -5,3 +6,7 @@
 
 
 To rename the app, global-find-replace `seiyials-new-app`.
+
+#### Gotchas
+
+url('') in linaria may have to use `url('${() => importedURL}')` instead of inline, for some reason.

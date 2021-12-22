@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 
-interface ImportMetaEnv extends Readonly<Record<string, string | number | boolean>> {
+interface ImportMetaEnv extends Readonly<Record<string, string | number | boolean | undefined>> {
 	readonly VITE_APP_TITLE: string
 }
 

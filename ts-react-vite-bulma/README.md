@@ -1,4 +1,4 @@
-Template last updated: 23 Dec 2021
+Last updated: 2 Dec 2021
 
 # Yay. Vite starter.
 

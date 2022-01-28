@@ -19,5 +19,7 @@ export const _appErrors = {
 
 	NOT_YET_SUPPORTED: 'This feature is not yet supported.',
 
-	UNKNOWN: 'Sorry, something went wrong.'
+	UNKNOWN: 'Sorry, something went wrong. (Unknown)',
+	/** for custom error messages. */
+	OTHER: 'Sorry, something went wrong. (Other)'
 } as const

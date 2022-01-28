@@ -2,25 +2,24 @@ import { _appErrors } from './appErrors'
 
 export type DkSuccessResult<DataType = undefined> = (
 	DataType extends undefined
-	? { data?: undefined, ok: true, issue?: undefined, errProps?: undefined }
-	: { data: DataType, ok: true, issue?: undefined, errProps?: undefined }
+	? { data?: undefined, ok: true }
+	: { data: DataType, ok: true }
 )
 
 export type DkFailureResult = {
 	ok: false,
-	err: DkError
-	// issue: string,
-	// errCode?: DkErrorCode,
-	// data?: undefined
-	// errProps: { [k: string]: any }
+	err: DkError,
+	issue: string,
+	errCode?: DkErrorCode,
+	errProps: any,
+	data?: undefined
 }
 
 export type DkResult<DataType = undefined> = DkSuccessResult<DataType> | DkFailureResult
 
-
 export type DkError = {
-	errCode: DkErrorCode,
-	errMsg: string,
+	code: DkErrorCode,
+	msg: string,
 	_isDkError: true,
 	props?: object
 }
@@ -28,56 +27,38 @@ export type DkError = {
 export const DkErrors = Object.fromEntries(
 	Object
 		.entries(_appErrors)
-		.map(([k, v]) => ([k as DkErrorCode, { errCode: k, errMsg: v, _isDkError: true } as DkError]))
+		.map(([k, v]) => ([k as DkErrorCode, { code: k, msg: v, _isDkError: true } as DkError]))
 ) as { [k in DkErrorCode]: DkError }
 
 export type DkErrorCode = keyof typeof _appErrors
 
-export const DkResults = {
-	fail: (issue: string | DkError, data?: { [k: string]: any }, customErrCode?: string): DkFailureResult => {
-		if (typeof issue === 'string') {
-			return <DkFailureResult>({ ok: false, issue, errProps: data, errCode: customErrCode })
-		} else {
-			return <DkFailureResult>({ ok: false, issue: issue.errMsg, errCode: issue.errCode, errProps: data })
-		}
-	},
-	pass: <T = undefined> (data?: T): DkSuccessResult<T> => {
+export const r = {
+	pass: < T = undefined> (data ?: T): DkSuccessResult < T > => {
 		return <DkSuccessResult<T>>({ ok: true, data })
 	},
-	_extractErrorFromResult: (result: DkFailureResult): DkError => {
-		return ({
-			_isDkError: true,
-			errCode: result.errCode ?? 'UNKNOWN',
-			errMsg: DkErrors[result.errCode ?? 'UNKNOWN'].errMsg, 
-			props: result.errProps
-		})
+	fail: (errCode: DkErrorCode, props?: any): DkFailureResult => {
+		const err = DkErrors[errCode]
+		return {
+			ok: false,
+			issue: err.msg,
+			err,
+			errCode,
+			errProps: props,
+		}
 	},
-	withoutData: (result: DkResult<any>): DkResult<undefined> => {
+	customFail: (msg: string, props?: any, errCode?: DkErrorCode): DkFailureResult => {
+		const code = errCode ?? 'OTHER'
+		const errorObj: DkError = {
+			_isDkError: true,
+			code,
+			msg,
+			props
+		}
+		return <DkFailureResult>({ ok: false, issue: msg, errProps: props, err: errorObj, errCode: code })
+	},
+	removeData: (result: DkResult<any>): DkResult<undefined> => {
 		return result.ok
 			? { ok: true }
-			: { ok: false, issue: result.issue, errProps: {}, errCode: (result as DkFailureResult).errCode }
-	}
-}
-
-export const r = {
-	pass: DkResults.pass,
-	fail: (errCode: DkErrorCode, props?: { [k: string]: any }): DkFailureResult => ({
-		ok: false,
-		issue: DkErrors[errCode].errMsg,
-		errCode,
-		errProps: props ?? {},
-		data: undefined
-	}),
-	prisma: <T extends object> (result: Promise<T>): Promise<DkResult<T>> => result
-		.then((val) => ({ ok: true, data: val }) as DkSuccessResult<T>)
-		.catch(() => ({ ok: false, errProps: {}, issue: DkErrors.PRISMA_ERROR.errMsg, errCode: 'PRISMA_ERROR' })),
-	make: (result: Promise<any>): Promise<DkResult> => result
-		.then(() => ({ ok: true, data: undefined }) as DkSuccessResult<undefined>)
-		.catch((e) => ({ ok: false, errProps: {}, issue: DkErrors.PRISMA_ERROR.errMsg, errCode: 'PRISMA_ERROR' })),
-
-
-	catchPrisma: (error: any, logError?: (stack: string) => void, errLabel?: string): DkFailureResult => {
-		logError?.(`${errLabel ? `<<${errLabel}>>` : 'JS Error?'}\nError: ${error.name}\nMessage: ${error.message}\nStack: ${error.stack}`)
-		return { ok: false, errProps: {}, issue: DkErrors.PRISMA_ERROR.errMsg, errCode: 'PRISMA_ERROR' }
+			: { ok: false, issue: (result as DkFailureResult).issue, errProps: null, err: (result as DkFailureResult).err, errCode: (result as DkFailureResult).errCode }
 	}
 }

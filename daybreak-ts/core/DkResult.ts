@@ -1,17 +1,18 @@
 import { _appErrors } from './appErrors'
 
-type DkSuccessResult<DataType = undefined> = (
+export type DkSuccessResult<DataType = undefined> = (
 	DataType extends undefined
 	? { data?: undefined, ok: true, issue?: undefined, errProps?: undefined }
 	: { data: DataType, ok: true, issue?: undefined, errProps?: undefined }
 )
 
-type DkFailureResult = {
+export type DkFailureResult = {
 	ok: false,
-	issue: string,
-	errCode?: DkErrorCode,
-	data?: undefined
-	errProps: { [k: string]: any }
+	err: DkError
+	// issue: string,
+	// errCode?: DkErrorCode,
+	// data?: undefined
+	// errProps: { [k: string]: any }
 }
 
 export type DkResult<DataType = undefined> = DkSuccessResult<DataType> | DkFailureResult

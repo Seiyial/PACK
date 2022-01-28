@@ -1,0 +1,10 @@
+{
+	"dependencies": {
+		"immer": "^9.0.12",
+		"react": "^17.0.2",
+		"use-immer": "^0.6.0"
+	},
+	"devDependencies": {
+		"@types/react": "^17.0.38"
+	}
+}

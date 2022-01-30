@@ -2,7 +2,7 @@ import produce, { Draft, freeze } from 'immer'
 import { useCallback, useState } from 'react'
 
 const useList = <T> (initialValue: T[]) => {
-	const [val, set] = useState(freeze(initialValue, true))
+	const [list, set] = useState(freeze(initialValue, true))
 
 	const updater = useCallback((updater: (orig: Draft<T[]>) => any) => set(produce<T[]>((v) => { updater(v) })), [])
 
@@ -24,7 +24,7 @@ const useList = <T> (initialValue: T[]) => {
 		// (thus this skips the need for { } function braces).
 		update: updater,
 		set,
-		val,
+		list,
 		removeFirstWhere,
 		add
 	}

@@ -1,6 +1,14 @@
 import produce, { Draft, freeze } from 'immer'
 import { useCallback, useState } from 'react'
 
+export type RUseList<T> = {
+	list: T[],
+	set: React.Dispatch<React.SetStateAction<T[]>>,
+	update: (updater: (orig: Draft<T>[]) => any) => void,
+	removeFirstWhere: (condition: (item: Draft<T>) => boolean) => void,
+	add: (...newItems: Draft<T>[]) => void,
+	removeIndex: (index: number) => void
+}
 const useList = <T> (initialValue: T[]) => {
 	const [list, set] = useState(freeze(initialValue, true))
 
@@ -18,6 +26,11 @@ const useList = <T> (initialValue: T[]) => {
 			list.push(...newItems)
 		})
 	}, [])
+	const removeIndex = useCallback((index: number) => {
+		updater((list) => {
+			list.splice(index, 1)
+		})
+	}, [])
 
 	return {
 		// better than use-immer, because it allows returning anything whereas use-immer requires Not returning anything for mutable update
@@ -26,7 +39,8 @@ const useList = <T> (initialValue: T[]) => {
 		set,
 		list,
 		removeFirstWhere,
-		add
+		add,
+		removeIndex
 	}
 }
 

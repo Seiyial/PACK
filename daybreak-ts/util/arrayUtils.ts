@@ -1,6 +1,7 @@
-export const dkMapify = <T>(arr: T, keyFactory: (item: T) => string) => {
+export const dkMapify = <T>(arr: T[], keyFactory: (item: T) => string) => {
     return arr.reduce((acc, item) => {
         acc[keyFactory(item)] = item
+        return acc
     }, { } as { [key: string]: T })
 }
 

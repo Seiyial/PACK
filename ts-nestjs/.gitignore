@@ -1,5 +1,8 @@
 .yarn/**
 !.yarn/releases
+private/*
+!private/.gitkeep
+.env
 
 # compiled output
 /dist

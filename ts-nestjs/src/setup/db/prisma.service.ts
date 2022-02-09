@@ -1,7 +1,7 @@
 import { PrismaClient } from '.prisma/client'
 import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common'
 import { PrismaClientKnownRequestError, PrismaClientRustPanicError } from '@prisma/client/runtime'
-import { DkResult, r } from 'daybreak'
+import { DkResult, DkResults, r } from 'lib/daybreak'
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
@@ -28,7 +28,11 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
 
 	public handlePrismaError (e: any, verbose?: 'log' | 'verbose'): DkResult & { ok: false } {
 		if (e instanceof PrismaClientKnownRequestError) {
-			if (e.code === 'P2025') {
+			if (e.code === 'P2002') {
+				const split = e.message.split('Unique constraint failed on the ')
+				const msg = split[1] ? `Someone has already used this value.` : `Someone has already used this ${split[1]}.`
+				return DkResults.fail(msg, undefined, 'UNIQUE_CONSTRAINT_ERROR')
+			} else if (e.code === 'P2025') {
 				// "An operation failed because it depends on one or more records that were required but not found. {cause}"
 				if (verbose === 'log') {
 					this.logger.error({ PRISMA_NOT_FOUND: e.message })

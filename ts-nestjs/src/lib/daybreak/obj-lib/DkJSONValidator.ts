@@ -1,15 +1,23 @@
-import { Logger } from '@nestjs/common'
-import { DkError, DkErrors, DkResult, DkResults } from './DkResult'
+import { DkError, DkErrors, DkResult, r } from '../core/DkResult'
 
 class DkJSONValidator<R extends object> {
 
 	private json: object
-	private debug: boolean
+	private showErrors: boolean
 	private valid: boolean
 	private debugErrors: { [k: string]: string[] } & { '_ROOT_': string[] }
+	private debugLogger?: (val: any) => void
 
-	constructor (data: unknown, rootType: 'array' | 'object' = 'object', cast?: (string | number)[], debug?: false) {
-		this.debug = debug !== false
+	constructor(
+		data: unknown,
+		rootType: 'array' | 'object' = 'object',
+		cast?: (string | number)[],
+		/** if `true`, dumps errors into the DkFailureResult props. */
+		showErrorsInFailResultProps: 'dump_error_props' | false = false,
+		debugLogger?: (val: any) => void
+	) {
+		this.debugLogger = debugLogger
+		this.showErrors = Boolean(debugLogger) || Boolean(showErrorsInFailResultProps)
 		this.debugErrors = { _ROOT_: [] }
 		this.valid = true
 		if (rootType === 'array') {
@@ -32,14 +40,14 @@ class DkJSONValidator<R extends object> {
 	}
 
 	private addDebugError (field: string | '_ROOT_', error: string) {
-		if (this.debug) {
+		if (this.showErrors) {
 			this.debugErrors[field] ??= []
 			this.debugErrors[field].push(error)
 		}
 	}
 
 	public async asyncValidate (property: string | number | (string | number)[], validator: (val: unknown) => Promise<boolean>) {
-		if (this.valid || this.debug) {
+		if (this.valid || this.showErrors) {
 			if (Array.isArray(property)) {
 				let access: any
 				for (const [index, prop] of property.entries()) {
@@ -57,13 +65,13 @@ class DkJSONValidator<R extends object> {
 				const valid = await validator(access)
 				if (!valid) {
 					this.valid = false
-					this.addDebugError(property.toString(), `failed validation${validator.name ? ` "${validator.name}"` : '(anonymous)'}.`)
+					this.addDebugError(property.toString(), `failed validation${ validator.name ? ` "${ validator.name }"` : '(anonymous)' }.`)
 				}
 			} else {
 				const valid = await validator(this.json[property])
 				if (!valid) {
 					this.valid = false
-					this.addDebugError(property.toString(), `failed validation${validator.name ? ` "${validator.name}"` : '(anonymous)'}.`)
+					this.addDebugError(property.toString(), `failed validation${ validator.name ? ` "${ validator.name }"` : '(anonymous)' }.`)
 				}
 			}
 		}
@@ -71,7 +79,7 @@ class DkJSONValidator<R extends object> {
 	}
 
 	public validate (property: string | number | (string | number)[], validator: (val: unknown) => boolean) {
-		if (this.valid || this.debug) {
+		if (this.valid || this.showErrors) {
 			if (Array.isArray(property)) {
 				let access: any
 				for (const [index, prop] of property.entries()) {
@@ -89,13 +97,13 @@ class DkJSONValidator<R extends object> {
 				const valid = validator(access)
 				if (!valid) {
 					this.valid = false
-					this.addDebugError(property.toString(), `failed validation${validator.name ? ` "${validator.name}"` : '(anonymous)'}.`)
+					this.addDebugError(property.toString(), `failed validation${ validator.name ? ` "${ validator.name }"` : '(anonymous)' }.`)
 				}
 			} else {
 				const valid = validator(this.json[property])
 				if (!valid) {
 					this.valid = false
-					this.addDebugError(property.toString(), `failed validation${validator.name ? ` "${validator.name}"` : '(anonymous)'}.`)
+					this.addDebugError(property.toString(), `failed validation${ validator.name ? ` "${ validator.name }"` : '(anonymous)' }.`)
 				}
 			}
 		}
@@ -110,7 +118,7 @@ class DkJSONValidator<R extends object> {
 					access = ind === 0 ? this.json[prop] : access[prop]
 					if (!access && ind < accessor.length - 1) {
 						this.valid = false
-						this.addDebugError(accessor.toString(), `Could not access, nulled out at access index ${ind} ${prop}: ${JSON.stringify(access)}.`)
+						this.addDebugError(accessor.toString(), `Could not access, nulled out at access index ${ ind } ${ prop }: ${ JSON.stringify(access) }.`)
 						return this
 					}
 				}
@@ -131,7 +139,7 @@ class DkJSONValidator<R extends object> {
 					const _valid = validator(item)
 					if (!_valid) {
 						this.valid = false
-						this.addDebugError(`${accessor}[${index}]`, `failed validation${validator.name ? ` "${validator.name}"` : '(anonymous)'}.`)
+						this.addDebugError(`${ accessor }[${ index }]`, `failed validation${ validator.name ? ` "${ validator.name }"` : '(anonymous)' }.`)
 					}
 				}
 			} else {
@@ -144,7 +152,7 @@ class DkJSONValidator<R extends object> {
 					const _valid = validator(item)
 					if (!_valid) {
 						this.valid = false
-						this.addDebugError(`${accessor}[${index}]`, `failed validation${validator.name ? ` "${validator.name}"` : '(anonymous)'}.`)
+						this.addDebugError(`${ accessor }[${ index }]`, `failed validation${ validator.name ? ` "${ validator.name }"` : '(anonymous)' }.`)
 					}
 				}
 			}
@@ -157,13 +165,16 @@ class DkJSONValidator<R extends object> {
 			const valid = validator(this.json)
 			if (!valid) {
 				this.valid = false
-				this.addDebugError('(custom root validator)', `failed validation${validator.name ? ` "${validator.name}"` : '(anonymous)'}.`)
+				this.addDebugError('(custom root validator)', `failed validation${ validator.name ? ` "${ validator.name }"` : '(anonymous)' }.`)
 			}
 		}
 		return this
 	}
 
 	static isString = (val: unknown): val is string => typeof val === 'string'
+	static isStringOrUndefined = (val: unknown): val is (undefined | string) => {
+		return typeof val === 'string' || val === undefined
+	}
 	static isNonEmptyStringOrNull = (val: unknown, minLen: number = 1): val is string | null => val === null || (typeof val === 'string' && val.length >= minLen)
 	static isValidFilename = (val: unknown): val is string => typeof val === 'string' && /^[^<>:;,?"*|/]+$/.test(val)
 	static isNonEmptyString = (val: unknown, minLen: number = 1): val is string => typeof val === 'string' && val.length >= minLen
@@ -187,31 +198,35 @@ class DkJSONValidator<R extends object> {
 	static isNumber = (val: unknown): val is number => typeof val === 'number'
 	static isInteger = (val: unknown): val is number => typeof val === 'number' && Math.round(val) === val
 
-	static isBoolean = (val: unknown): val is boolean => typeof val === 'number'
+	static isBoolean = (val: unknown): val is boolean => typeof val === 'boolean'
 	static isObject = (val: unknown): val is { [k: string]: unknown } => Boolean(val) && typeof val === 'object' && !Array.isArray(val)
 
 	static isArray = (val: unknown): val is unknown[] => Array.isArray(val)
 	static isArrayOfStrings = (val: unknown): val is string[] => Array.isArray(val) && val.findIndex((v) => typeof v !== 'string') === -1
 	static isNonEmptyArrayOfStrings = (val: unknown): val is [string, ...string[]] => DkJSONValidator.isArrayOfStrings(val) && typeof val[0] === 'string'
 
-	acceptIfValid (failError: DkError = DkErrors.CM_INVALID_REQ, debugLogger?: Logger): DkResult<R> {
+	acceptIfValid (failError: DkError = DkErrors.INVALID_REQUEST): DkResult<R> {
 
 		if (this.valid) {
-			return DkResults.pass(this.json as R)
+			return r.pass(this.json as R)
 		} else {
-			if (debugLogger) {
-				debugLogger.warn({ DK_INVALID_JSON: { json: this.json, errors: this.debugErrors } })
+			this.debugLogger?.({ DK_INVALID_JSON: { json: this.json, errors: this.debugErrors } })
+			return {
+				ok: false,
+				err: failError ?? DkErrors.INVALID_REQUEST,
+				errProps: this.showErrors ? this.debugErrors : undefined,
+				issue: failError?.msg ?? DkErrors.INVALID_REQUEST.msg
 			}
-			return DkResults.fail(failError ?? DkErrors.CM_INVALID_REQ)
 		}
 	}
 
-	isValid (debugLogger?: Logger): boolean {
-		if (!this.valid && debugLogger) {
-			debugLogger.warn({ debug: this.debug, DK_INVALID_JSON: { json: this.json, errors: this.debugErrors } })
+	isValid (): boolean {
+		if (!this.valid) {
+			this.debugLogger?.({ showErrors: this.showErrors, DK_INVALID_JSON: { json: this.json, errors: this.debugErrors } })
 		}
 		return this.valid
 	}
 }
 
 export default DkJSONValidator
+export const V = DkJSONValidator

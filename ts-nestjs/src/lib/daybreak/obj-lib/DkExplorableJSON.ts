@@ -2,7 +2,7 @@ class DkExplorableJSON {
 
 	json: object
 
-	constructor (json: any) {
+	constructor(json: any) {
 		this.json = typeof json === 'object' ? json : {}
 	}
 
@@ -106,7 +106,7 @@ class DkExplorableJSON {
 		return null
 	}
 
-	public getStrings <T extends string> (...keyList: T[]): { [k in T]: string | null } {
+	public getStrings<T extends string> (...keyList: T[]): { [k in T]: string | null } {
 		if (typeof this.json === 'object' && this.json) {
 			return keyList.reduce((acc, k) => {
 				const r = (this.json as any)[k]

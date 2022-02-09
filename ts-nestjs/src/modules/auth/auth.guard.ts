@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/common'
 import { Request } from 'express'
-import { TiteSession } from './auth.types'
+import { AppSession } from './auth.types'
 
 
 @Injectable()
@@ -12,7 +12,7 @@ export class AuthGuard implements CanActivate {
 	): boolean {
 		const req: Request = context.switchToHttp().getRequest()
 
-		const userID = (req.session as TiteSession).userID
+		const userID = (req.session as AppSession).userID
 		return Boolean(userID)
 	}
 }

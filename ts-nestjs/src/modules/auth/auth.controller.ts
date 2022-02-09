@@ -1,10 +1,11 @@
 import { Body, Controller, Get, Logger, Post, Session } from '@nestjs/common'
-import { DkFailureResult, DkJSONValidator, DkResult, r } from 'lib/daybreak'
+import { DkResult, r } from 'lib/daybreak'
+import { V } from 'lib/daybreak/obj-lib/DkJSONValidator'
 import { APIUser } from 'lib/model/APIUser'
 import { APIUserSessionResult } from 'lib/model/APIUserSessionResult'
 import { UserService } from 'modules/user/user.service'
 import { AuthService } from './auth.service'
-import { TiteSession } from './auth.types'
+import { AppSession } from './auth.types'
 
 @Controller('auth')
 export class AuthController {
@@ -19,20 +20,20 @@ export class AuthController {
 	@Post('/signup')
 	async signupWithEmailAndPassword (
 		@Body() body: unknown,
-		@Session() session: TiteSession
+		@Session() session: AppSession
 	): Promise<DkResult<APIUser>> {
 		if (session.userID) return r.fail('ALREADY_LOGGED_IN')
-		const payload = new DkJSONValidator<{email: string, encPw: string, name: string}>(body, 'object', ['email', 'encPw', 'name'])
-			.validate('email', DkJSONValidator.isProbablyOkayEmailAddress)
-			.validate('encPw', DkJSONValidator.isNonEmptyString)
-			.validate('name', DkJSONValidator.isNonEmptyString)
+		const payload = new V<{ email: string, encPw: string, name: string }>(body, 'object', ['email', 'encPw', 'name'])
+			.validate('email', V.isProbablyOkayEmailAddress)
+			.validate('encPw', V.isNonEmptyString)
+			.validate('name', V.isNonEmptyString)
 			.acceptIfValid()
 
 		if (!payload.ok) return r.fail('INVALID_REQUEST')
 
 		const email = payload.data.email.toLowerCase()
 		const pw = this.authSvc.decryptFrontendPassword(payload.data.encPw)
-		if (!pw.ok) return pw as DkFailureResult
+		if (!pw.ok) return pw
 		const canCreateUser = await this.userSvc.checkEmailUnused(email)
 		if (!canCreateUser.ok) return canCreateUser
 
@@ -46,30 +47,29 @@ export class AuthController {
 	@Post('/login')
 	async loginWithEmailPassword (
 		@Body() body: unknown,
-		@Session() session: TiteSession
+		@Session() session: AppSession
 	): Promise<DkResult<{ user: APIUser }>> {
 		if (session.userID) return r.fail('ALREADY_LOGGED_IN')
 
-		const payload = new DkJSONValidator<{encPw: string, email: string}>(body, 'object', ['encPw', 'email'])
-			.validate('email', DkJSONValidator.isProbablyOkayEmailAddress)
-			.validate('encPw', DkJSONValidator.isNonEmptyString)
+		const payload = new V<{ encPw: string, email: string }>(body, 'object', ['encPw', 'email'])
+			.validate('email', V.isProbablyOkayEmailAddress)
+			.validate('encPw', V.isNonEmptyString)
 			.acceptIfValid()
-		if (!payload.ok) return payload as DkFailureResult
-
+		if (!payload.ok) return payload
 		const user = await this.authSvc.validateUser(payload.data.email, payload.data.encPw)
-		if (!user.ok) return user as DkFailureResult
 
+		if (!user.ok) return user
 		session.userID = user.data.id
 		this.logger.log(session.userID)
 		session.save()
 		const userData = await this.userSvc.getUserFrontendSessionData(user.data.id)
 		if (!userData) return r.fail('USER_NOT_FOUND')
-		return r.pass({user: userData})
+		return r.pass({ user: userData })
 	}
 
 	@Get('/session')
 	async getSessionIfAny (
-		@Session() session: TiteSession
+		@Session() session: AppSession
 	): Promise<DkResult<APIUserSessionResult>> {
 		if (!session.userID) return r.pass({ user: null })
 		const user = await this.userSvc.getUserFrontendSessionData(session.userID)
@@ -82,7 +82,7 @@ export class AuthController {
 
 	@Get('/logout')
 	async logout (
-		@Session() session: TiteSession
+		@Session() session: AppSession
 	): Promise<DkResult> {
 		session.userID = undefined
 		return r.pass()

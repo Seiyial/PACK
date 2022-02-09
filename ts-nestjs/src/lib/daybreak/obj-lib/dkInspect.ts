@@ -1,14 +1,14 @@
 import chalk from 'chalk'
-import { isAsyncFunction } from 'util/types'
+import { isAsyncFunction } from 'node:util/types'
 
 const dkInspect = (item: any, log: (str: string) => any = console.log) => {
 
 	if (isAsyncFunction(item)) {
-		log(chalk.cyanBright(`async fn ${item.name} (${getParamNames(item).map((v) => chalk.yellow(v)).join(', ')})`))
+		log(chalk.cyanBright(`async fn ${ item.name } (${ getParamNames(item).map((v) => chalk.yellow(v)).join(', ') })`))
 	} else if (item instanceof Function) {
-		log(chalk.cyanBright(`fn ${item.name} (${getParamNames(item).map((v) => chalk.yellow(v)).join(', ')})`))
+		log(chalk.cyanBright(`fn ${ item.name } (${ getParamNames(item).map((v) => chalk.yellow(v)).join(', ') })`))
 	} else if (item.constructor) {
-		log(chalk.green.bold(`${item.constructor.name} {}`))
+		log(chalk.green.bold(`${ item.constructor.name } {}`))
 	} else if (item.name) {
 		log(chalk.cyan(item))
 	}
@@ -16,7 +16,7 @@ const dkInspect = (item: any, log: (str: string) => any = console.log) => {
 		const [keys, longestLen] = getAllObjKeysAndLongestLen(item)
 		for (const k of keys) {
 			const val = item[k]
-			let print: string = `  ${k}: `
+			let print: string = `  ${ k }: `
 			if (typeof val === 'function') {
 				if (val.constructor.name === 'AsyncFunction') {
 					print += chalk.blue(' ' + new Array(longestLen - k.length + 1).join(chalk.gray('•')) + ' async fn (')
@@ -33,7 +33,7 @@ const dkInspect = (item: any, log: (str: string) => any = console.log) => {
 				print += chalk.cyan(_val)
 			} else if (typeof val === 'object') {
 				if (val?.constructor?.name) {
-					print += chalk.magenta(`${val.constructor.name} {}`)
+					print += chalk.magenta(`${ val.constructor.name } {}`)
 				} else {
 					let _val = JSON.stringify(val)
 					if (_val.length > 100) _val = _val.slice(0, 100) + chalk.gray(' (...)')
@@ -44,7 +44,7 @@ const dkInspect = (item: any, log: (str: string) => any = console.log) => {
 				print += chalk.green(val.length >= 30 ? val.slice(0, 30) + chalk.gray(' (...)') : val)
 				print += chalk.green('"')
 			} else if (typeof val === 'number') {
-				print += chalk.keyword('orange')(val)
+				print += chalk.yellow(val)
 			} else {
 				print += chalk.red(val)
 			}
@@ -82,7 +82,7 @@ const getAllObjKeysAndLongestLen = (obj: object): [string[], number] => {
 	properties.delete('valueOf')
 	properties.delete('toString')
 	properties.delete('toLocaleString')
-	const keys = [...properties.keys()]
+	const keys = Array.from(properties.keys())
 	const longestKeyForPaddingFunctions = keys.reduce((acc, k) => k.length > acc ? k.length : acc, 0)
 	return [keys, longestKeyForPaddingFunctions]
 }

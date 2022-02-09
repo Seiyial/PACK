@@ -12,14 +12,27 @@ export class UserService {
 		private readonly prisma: PrismaService
 	) { }
 
+	public async canCreateProjects (userID: string | null | undefined): Promise<[false, null] | [boolean, User]> {
+		if (!userID) return [false, null]
+		return this.prisma.wrapResult(this.prisma.user.findUnique({
+			where: { id: userID }
+		})).then((result) => {
+			if (!result.ok) return [false, null]
+			return [
+				result.data.canCreateProjects,
+				result.data
+			]
+		})
+	}
+
 	async findByEmail (usernameOrEmail: string) {
-		return this.prisma.wrapResult(this.prisma.user.findFirst({
-			where: { email: usernameOrEmail },
+		return this.prisma.wrapResult(this.prisma.user.findUnique({
+			where: { email: usernameOrEmail.toLowerCase() },
 		}))
 	}
 
 	async checkEmailUnused (email: string): Promise<DkResult> {
-		return this.prisma.user.findUnique({ where: { email } })
+		return this.prisma.user.findUnique({ where: { email: email.toLowerCase() } })
 			.then((u) => {
 				return u ? r.fail('USER_ALREADY_EXISTS') : r.pass()
 			})
@@ -29,7 +42,7 @@ export class UserService {
 	async createUser (email: string, fullname: string, plainPassword: Buffer) {
 		return this.prisma.wrapResult(this.prisma.user.create({
 			data: {
-				email,
+				email: email.toLowerCase(),
 				name: fullname,
 				passwordHash: (await argon2.hash(plainPassword)),
 			}

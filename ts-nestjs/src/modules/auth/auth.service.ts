@@ -4,7 +4,7 @@ import { privateDecrypt, createPrivateKey, KeyObject, constants } from 'crypto'
 import { readFileSync } from 'fs'
 import { DkResult, r } from 'lib/daybreak'
 import argon2 from 'argon2'
-import dkInspect from 'lib/daybreak/dkInspect'
+import dkInspect from 'lib/daybreak/obj-lib/dkInspect'
 import { User } from '.prisma/client'
 
 
@@ -57,6 +57,7 @@ export class AuthService {
 
 		const user = await this.userSvc.findByEmail(userEmail.toLowerCase())
 		if (!user.ok) return r.fail('USER_NOT_FOUND')
+		if (!user.data.passwordHash) return r.fail('USER_LOGIN_METHOD_NOT_ENABLED')
 		const isValidPassword = await argon2.verify(user.data.passwordHash, password).catch((e) => {
 			this.logger.error(e)
 			return false

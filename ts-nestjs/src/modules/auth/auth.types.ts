@@ -1,6 +1,5 @@
-import { SchoolMember, User } from '.prisma/client'
 import { Session } from 'express-session'
 
-export type TiteSession = {
+export type AppSession = {
 	userID?: string
 } & Session

@@ -1,12 +1,12 @@
 .yarn/**
 !.yarn/releases
-private/*
-!private/.gitkeep
-.env
 
 # compiled output
 /dist
 /node_modules
+
+.env
+private/**
 
 # Logs
 logs

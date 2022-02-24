@@ -24,7 +24,7 @@ import toughCookie from 'tough-cookie'
 
 // CONFIGURE THESE FOR YOUR NESTJS APPLICATION =========================
 // FOR THIS TO WORK YOU ALSO NEED TO RESOLVE (package.json > "resolutions": {}) tough-cookie TO 4.0.0 (see CM README) and @types/express-session to "Seiyial/types-express-session-custom".
-const PATH_TO_APPMODULE = `${__dirname}/setup/workers/main/AppModule`
+const PATH_TO_APPMODULE = `${ __dirname }/setup/workers/main/AppModule`
 const PATH_TO_REPL_HISTORY_FILE = './src/setup/repl.history'
 const PATH_TO_ALIAS_FILE = './src/setup/consoleAlias.txt'
 const IMPORT_ANY_MODULE_HERE = AppModule
@@ -132,7 +132,7 @@ class InteractiveNestJS {
 				if (inst[inst.length - 1].wrapperRef.name === name) {
 					const macro = customMacro ?? name.replace(/[a-z]/g, '')
 					this.server.context[macro] = applicationContext.get(key)
-					log(`Aliased ${chalk.blue.bold(name)} -> ${chalk.green.bold(macro)}`)
+					log(`Aliased ${ chalk.blue.bold(name) } -> ${ chalk.green.bold(macro) }`)
 					break
 				}
 			}
@@ -146,8 +146,8 @@ class InteractiveNestJS {
 		})
 		this.server.context.alias = (name: string, customMacro?: string) => {
 			setAlias(name, customMacro)
-			this.aliases.push(`${customMacro ? `${customMacro}: ` : ''}${name}`)
-			saveAliases(this.aliases).then(() => log(`${PATH_TO_ALIAS_FILE} updated`))
+			this.aliases.push(`${ customMacro ? `${ customMacro }: ` : '' }${ name }`)
+			saveAliases(this.aliases).then(() => log(`${ PATH_TO_ALIAS_FILE } updated`))
 		}
 		this.server.context.unalias = (macroOrName: string) => {
 			const index = this.aliases.findIndex((al) => {
@@ -177,7 +177,7 @@ class InteractiveNestJS {
 				provider = providerOrMacro
 			}
 			if (!provider) {
-				log(chalk.yellow(`\nMacro ${chalk.bold(`"${providerOrMacro}"`)} Not found.\n`))
+				log(chalk.yellow(`\nMacro ${ chalk.bold(`"${ providerOrMacro }"`) } Not found.\n`))
 				return
 			}
 
@@ -186,7 +186,7 @@ class InteractiveNestJS {
 			let alias: string | null = null
 			if (providerOrMacro !== provider) {
 				alias = providerOrMacro as string
-				log(chalk.cyan(`alias ${chalk.bold(providerOrMacro)}`))
+				log(chalk.cyan(`alias ${ chalk.bold(providerOrMacro) }`))
 			} else {
 				for (const v of this.aliases) {
 					if (v.includes(':')) {
@@ -204,16 +204,16 @@ class InteractiveNestJS {
 				}
 
 				if (alias) {
-					log(chalk.cyan(`alias ${chalk.bold(alias)}`))
+					log(chalk.cyan(`alias ${ chalk.bold(alias) }`))
 				} else {
-					log(chalk.gray(`alias this => alias('${provider.constructor.name}')`))
+					log(chalk.gray(`alias this => alias('${ provider.constructor.name }')`))
 				}
 			}
-			log(chalk.green.bold(`${provider.constructor.name} {}`))
+			log(chalk.green.bold(`${ provider.constructor.name } {}`))
 			const [keys, longestLen] = getAllObjKeysAndLongestLen(provider)
 			for (const k of keys) {
 				const val = provider[k]
-				let print: string = `  ${k}: `
+				let print: string = `  ${ k }: `
 				if (typeof val === 'function') {
 					if (val.constructor.name === 'AsyncFunction') {
 						print += chalk.blue(' ' + new Array(longestLen - k.length + 1).join(chalk.gray('•')) + ' async fn (')
@@ -230,7 +230,7 @@ class InteractiveNestJS {
 					print += chalk.cyan(_val)
 				} else if (typeof val === 'object') {
 					if (val?.constructor?.name) {
-						print += chalk.magenta(`${val.constructor.name} {}`)
+						print += chalk.magenta(`${ val.constructor.name } {}`)
 					} else {
 						let _val = JSON.stringify(val)
 						if (_val.length > 100) _val = _val.slice(0, 100) + chalk.gray(' (...)')
@@ -241,13 +241,13 @@ class InteractiveNestJS {
 					print += chalk.green(val.length >= 30 ? val.slice(0, 30) + chalk.gray(' (...)') : val)
 					print += chalk.green('"')
 				} else if (typeof val === 'number') {
-					print += chalk.keyword('orange')(val)
+					print += chalk.yellow(val)
 				} else {
 					print += chalk.red(val)
 				}
 				log(print)
 			}
-			log(chalk.gray(`  use ${alias ?? `alias('${provider.constructor.name}'); <ALIAS>`}.<tab> for all`))
+			log(chalk.gray(`  use ${ alias ?? `alias('${ provider.constructor.name }'); <ALIAS>` }.<tab> for all`))
 			log('')
 		}
 
@@ -256,27 +256,27 @@ class InteractiveNestJS {
 			log(chalk.gray('•') + ' ' + chalk.cyan('help()') + '     displays this help message')
 			log('')
 			log(chalk.yellow.bold('Lib Access'))
-			log(chalk.gray('•') + ' ' + chalk.cyan(`alias(${chalk.yellow('provider')}, ${chalk.yellow('[customAlias]')})`) + ' obtains an instance and gives it an alias.')
+			log(chalk.gray('•') + ' ' + chalk.cyan(`alias(${ chalk.yellow('provider') }, ${ chalk.yellow('[customAlias]') })`) + ' obtains an instance and gives it an alias.')
 			// log(chalk.gray('•') + ' ' + chalk.cyan(`get(${chalk.yellow('provider')}, ${chalk.yellow('[customAlias]')})`) + ' same as alias/2.')
-			log(chalk.gray('•') + ' ' + chalk.cyan(`unalias(${chalk.yellow('providerOrAlias')})`) + ' removes an alias.')
+			log(chalk.gray('•') + ' ' + chalk.cyan(`unalias(${ chalk.yellow('providerOrAlias') })`) + ' removes an alias.')
 			log('')
 
 			log(chalk.yellow.bold('HTTP Access'))
-			log(chalk.gray('•') + ' ' + chalk.cyan(`login(${chalk.yellow('<id> or <email>')})`) + ' attaches a logged in session the HTTP instance.')
-			log(chalk.gray('•') + ' ' + chalk.cyan(`req(${chalk.yellow('method')}, ${chalk.yellow('path')}, ${chalk.yellow('body')}, ${chalk.yellow('returnType')}, ${chalk.yellow('print')})`) + ' makes a http request. \n' + chalk.whiteBright('   Requires active running server') + '.')
-			log(chalk.gray(`  • ${chalk.white('method')} p, g, d, post, get, delete.`))
-			log(chalk.gray(`  • ${chalk.white('path')}   e.g. "/g/state"; use setRemote() to change prefixUrl.`))
-			log(chalk.gray(`  • ${chalk.white('body')}   JS Object, string, buffer, ReadableStream.`))
-			log(chalk.gray(`  • ${chalk.white('returnType')} "raw" or "json". JSON will be parsed.`))
-			log(chalk.gray(`  • ${chalk.white('print')}  (boolean) whether to print the result & statusCode.`))
-			log(chalk.gray('•') + ' ' + chalk.cyan(`setRemote(${chalk.yellow('remoteURL')})`) + ' makes this session\'s HTTP requests connect to remoteURL.\n   login() may not work.')
+			log(chalk.gray('•') + ' ' + chalk.cyan(`login(${ chalk.yellow('<id> or <email>') })`) + ' attaches a logged in session the HTTP instance.')
+			log(chalk.gray('•') + ' ' + chalk.cyan(`req(${ chalk.yellow('method') }, ${ chalk.yellow('path') }, ${ chalk.yellow('body') }, ${ chalk.yellow('returnType') }, ${ chalk.yellow('print') })`) + ' makes a http request. \n' + chalk.whiteBright('   Requires active running server') + '.')
+			log(chalk.gray(`  • ${ chalk.white('method') } p, g, d, post, get, delete.`))
+			log(chalk.gray(`  • ${ chalk.white('path') }   e.g. "/g/state"; use setRemote() to change prefixUrl.`))
+			log(chalk.gray(`  • ${ chalk.white('body') }   JS Object, string, buffer, ReadableStream.`))
+			log(chalk.gray(`  • ${ chalk.white('returnType') } "raw" or "json". JSON will be parsed.`))
+			log(chalk.gray(`  • ${ chalk.white('print') }  (boolean) whether to print the result & statusCode.`))
+			log(chalk.gray('•') + ' ' + chalk.cyan(`setRemote(${ chalk.yellow('remoteURL') })`) + ' makes this session\'s HTTP requests connect to remoteURL.\n   login() may not work.')
 			log(chalk.gray('•') + ' ' + chalk.cyan('unsetRemote()') + ' changes the remote URL back to the default.')
 			log('')
 		}
 		log(chalk.gray('help() to see commands'))
 
 		this.server.context.login = (arg: string) => {
-			log(chalk.gray(`:: IMPL_LOGIN(applicationContext, "${arg}")`))
+			log(chalk.gray(`:: IMPL_LOGIN(applicationContext, "${ arg }")`))
 			IMPL_LOGIN(
 				applicationContext,
 				arg,
@@ -300,7 +300,7 @@ class InteractiveNestJS {
 		) => {
 			const _path = path.startsWith('/') ? path.substring(1) : path
 			const _method = (method.length === 1) ? httpMethodExpander[method.toLowerCase()] : method.toUpperCase()
-			log(`\n${chalk.yellow.bold(_method)} ${chalk.cyan('/' + _path)} ${JSON.stringify(body)}`)
+			log(`\n${ chalk.yellow.bold(_method) } ${ chalk.cyan('/' + _path) } ${ JSON.stringify(body) }`)
 			const result = this.server.context.got(_path, {
 				method: _method,
 				..._method.toLowerCase() !== 'get'
@@ -325,13 +325,13 @@ class InteractiveNestJS {
 				} else {
 					if (print) {
 						log((resp as Response).statusCode.toString().startsWith('2') ? chalk.green.bold((resp as Response).statusCode.toString()) : chalk.red.bold((resp as Response).statusCode.toString()))
-						log(`${chalk.gray('Body:')} ${(resp as Response).body}`)
+						log(`${ chalk.gray('Body:') } ${ (resp as Response).body }`)
 					}
 					return resp
 				}
 			}).catch((e) => {
 				if (e instanceof TypeError && 'code' in e && (e as any).code === 'ERR_INVALID_URL') {
-					log(`${chalk.magenta('ERR_INVALID_URL')}: ${chalk.white.bold('Is your server running?')}`)
+					log(`${ chalk.magenta('ERR_INVALID_URL') }: ${ chalk.white.bold('Is your server running?') }`)
 				}
 				if (print) {
 					if ('message' in e) log(chalk.red(e.message.toString()))
@@ -377,7 +377,7 @@ const readAliases = async (): Promise<string[]> => {
 		const f = await fsp.readFile(PATH_TO_ALIAS_FILE, 'utf-8')
 		return f.split('\n')
 	} else {
-		purdy(Error(`${PATH_TO_ALIAS_FILE} is a non-file. No aliases can be parsed or saved.`), {})
+		purdy(Error(`${ PATH_TO_ALIAS_FILE } is a non-file. No aliases can be parsed or saved.`), {})
 		return []
 	}
 }
@@ -386,7 +386,7 @@ const saveAliases = async (aliases: string[]): Promise<void> => {
 	if (fStatus || fStatus === null) {
 		await fsp.writeFile(PATH_TO_ALIAS_FILE, aliases.join('\n'))
 	} else {
-		purdy(Error(`${PATH_TO_ALIAS_FILE} is a non-file. No aliases can be parsed or saved.`), {})
+		purdy(Error(`${ PATH_TO_ALIAS_FILE } is a non-file. No aliases can be parsed or saved.`), {})
 	}
 }
 var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg

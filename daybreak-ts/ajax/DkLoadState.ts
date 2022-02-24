@@ -1,5 +1,4 @@
-import { DkResult, toDkError } from '../types/DkResult'
-import { DkError } from '../types/DkErrors'
+import { DkFailureResult, DkResult, DkError } from '../core/DkResult'
 
 export type DkLoadState = {
 	loaded: null
@@ -26,4 +25,4 @@ export const dkLoadState = {
 export const toDkLoadState = <T = undefined> (result: DkResult<T>): WithDkLoadState<T> =>
 	result.ok
 		? ({ loaded: true, data: result.data as T })
-		: ({ loaded: false, error: toDkError(result) })
+		: ({ loaded: false, error: (result as DkFailureResult).err })

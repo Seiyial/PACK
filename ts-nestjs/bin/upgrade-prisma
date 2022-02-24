@@ -1,0 +1,1 @@
+pnpm add -D prisma@latest; pnpm add @prisma/client@latest

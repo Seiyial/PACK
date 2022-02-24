@@ -1,12 +1,9 @@
 import { _appErrors } from './appErrors'
 
-export type DkSuccessResult<DataType = undefined> = (
-	DataType extends undefined
-		? { data?: undefined, ok: true }
-		: { data: DataType, ok: true }
-)
+// if your `if (!result.ok) return result` is not casted as DkFailureResult, use `alwaysStrict: true, strictNullChecks: true` in tsconfig.
+type DkSuccessResult<DataType = undefined> = { data: DataType, ok: true, issue?: undefined, errCode?: undefined, errProps?: undefined, err?: undefined }
 
-export type DkFailureResult = {
+type DkFailureResult = {
 	ok: false,
 	err: DkError,
 	issue: string,
@@ -33,7 +30,7 @@ export const DkErrors = Object.fromEntries(
 export type DkErrorCode = keyof typeof _appErrors
 
 export const r = {
-	pass: < T = undefined> (data ?: T): DkSuccessResult < T > => {
+	pass: <T = undefined> (data?: T): DkSuccessResult<T> => {
 		return <DkSuccessResult<T>>({ ok: true, data })
 	},
 	fail: (errCode: DkErrorCode, props?: any): DkFailureResult => {
@@ -58,7 +55,7 @@ export const r = {
 	},
 	removeData: (result: DkResult<any>): DkResult<undefined> => {
 		return result.ok
-			? { ok: true }
+			? { ok: true, data: undefined }
 			: { ok: false, issue: (result as DkFailureResult).issue, errProps: null, err: (result as DkFailureResult).err, errCode: (result as DkFailureResult).errCode }
 	}
 }

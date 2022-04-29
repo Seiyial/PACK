@@ -1,5 +1,5 @@
 import produce, { Draft, freeze } from 'immer'
-import { useCallback, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 
 export type RUseList<T> = {
 	list: T[],
@@ -9,7 +9,9 @@ export type RUseList<T> = {
 	add: (...newItems: Draft<T>[]) => void,
 	removeIndex: (index: number) => void
 }
-const useList = <T> (initialValue: T[]) => {
+const useList = <T> (
+	initialValue: T[]
+): RUseList<T> => {
 	const [list, set] = useState(freeze(initialValue, true))
 
 	const updater = useCallback((updater: (orig: Draft<T[]>) => any) => set(produce<T[]>((v) => { updater(v) })), [])

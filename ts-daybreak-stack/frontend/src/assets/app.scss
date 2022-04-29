@@ -1,0 +1,50 @@
+@import '@fontsource/nunito-sans/300.css';
+@import '@fontsource/nunito-sans/400.css';
+@import '@fontsource/nunito-sans/600.css';
+@import '@fontsource/nunito-sans/700.css';
+
+$family-sans-serif: 'Nunito Sans', 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+  'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+  'Noto Color Emoji';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "normalize.css/normalize.css";
+
+.font-logo {
+	font-family: 'Oswald', 'Nunito Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+  'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+  'Noto Color Emoji';
+  font-weight: 500;
+}
+
+html, body, #root {
+	margin: 0;
+	padding: 0;
+	min-height: 100%;
+	height: 100%;
+	min-width: 100%;
+	overflow: auto;
+	font-family: $family-sans-serif;
+}
+p, h1, h2, h3, h4, h5, h6 {
+	margin: 0;
+	padding: 0;
+}
+
+.special-scrollbar::-webkit-scrollbar {
+  width: 10px;
+  @apply bg-transparent ml-2;
+}
+
+.special-scrollbar::-webkit-scrollbar-track {
+  width: 10px;
+  @apply bg-transparent;
+}
+
+.special-scrollbar::-webkit-scrollbar-thumb {
+  width: 10px;
+  @apply bg-slate-400/50 transition-colors hover:bg-slate-400/70 active:bg-slate-400/90;
+}

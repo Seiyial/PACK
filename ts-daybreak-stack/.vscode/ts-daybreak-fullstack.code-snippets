@@ -1,0 +1,7 @@
+{
+	"DTO Type Import": {
+		"scope": "typescript,typescriptreact",
+		"prefix": "timport",
+		"body": "import { $1 } from 'common/dto/$1'"
+	}
+}

@@ -1,0 +1,6 @@
+{
+	"extends": "@syxdaybreak/eslint-config/with-react",
+	"rules": {
+		"react/jsx-indent": ["warn", "tab"]
+	}
+}

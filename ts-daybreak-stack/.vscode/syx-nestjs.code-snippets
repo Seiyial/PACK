@@ -1,0 +1,248 @@
+{
+	"Service file": {
+		"scope": "typescript",
+		"prefix": "nnsvc",
+		"body": [
+			"import { Injectable, Logger } from '@nestjs/common'",
+			"import { r, DkResult } from 'daybreak'",
+			"",
+			"@Injectable()",
+			"export class $TM_FILENAME_BASE {",
+			"",
+			"\tlogger = new Logger('$TM_FILENAME')",
+			"",
+			"\t$1",
+			"",
+			"}",
+			""
+		]
+	},
+	"Controller file": {
+		"scope": "typescript",
+		"prefix": "nestcontroller",
+		"body": [
+			"import { Body, Controller, Injectable, Logger, Post, Session, UseGuards } from '@nestjs/common'",
+			"import { r, DkResult, DkJSONValidator } from 'daybreak'",
+			"import { DkAuthGuard } from 'modules/login/DkAuthGuard'",
+			"import { IBSession } from 'setup/sharedStructs/sessionType'",
+			"",
+			"@Controller('${1:BASE_ENDPOINT}')",
+			"export class $TM_FILENAME_BASE {",
+			"",
+			"\tlogger = new Logger('$TM_FILENAME')",
+			"",
+			"\t$2",
+			"",
+			"}",
+			""
+		]
+	},
+	"Module file": {
+		"scope": "typescript",
+		"prefix": "nestmod",
+		"body": [
+			"import { Module } from '@nestjs/common'",
+			"",
+			"@Module({",
+			"\tproviders: [],",
+			"\timports: [],",
+			"\tcontrollers: [],",
+			"\texports: []",
+			"})",
+			"export class $TM_FILENAME_BASE {}",
+			""
+		]
+	},
+	"constructor (private readonly. ..) {}": {
+		"scope": "typescript",
+		"prefix": "nconst",
+		"body": [
+			"constructor (",
+			"\tprivate readonly $1",
+			") {}"
+		]
+	},
+	"private readonly": {
+		"scope": "typescript",
+		"prefix": "npr",
+		"body": [
+			"private readonly "
+		]
+	},
+	"DkPromise": {
+		"scope": "typescript",
+		"prefix": "nkpr",
+		"body": "Promise<DkResult$1>",
+	},
+	"PublicNonDkSyncFn": {
+		"scope": "typescript",
+		"prefix": "pf",
+		"body": [
+			"public ${1:whatsTheFunction} ($2) {",
+			"\t",
+			"}"
+		]
+	},
+	"PublicDkSyncFn": {
+		"scope": "typescript",
+		"prefix": "pfn",
+		"body": [
+			"public ${1:whatsTheFunction} ($2): DkResult {",
+			"\t",
+			"}"
+		]
+	},
+	"PublicDkSyncFnReturningData": {
+		"scope": "typescript",
+		"prefix": "pfn",
+		"body": [
+			"public ${1:whatsTheFunction} ($2): DkResult<${3:WhatsTheFunction}> {",
+			"\t",
+			"}"
+		]
+	},
+	"NonDKPublicAsyncFunction": {
+		"scope": "typescript",
+		"prefix": "pasf",
+		"body": [
+			"public async ${1:whatsTheFunction} ($2) {",
+			"\t",
+			"}"
+		]
+	},
+	"DkAsyncFnReturningNothing": {
+		"scope": "typescript",
+		"prefix": "pasfn",
+		"body": [
+			"public async ${1:whatsTheFunction} ($2): Promise<DkResult> {",
+			"\t",
+			"}"
+		]
+	},
+	"DkAsyncFnReturningData": {
+		"scope": "typescript",
+		"prefix": "pasfnx",
+		"body": [
+			"public async ${1:whatsTheFunction} ($2): Promise<DkResult<${3:MyResultData}>> {",
+			"\t",
+			"}"
+		]
+	},
+	"DkPrivateFunction": {
+		"scope": "typescript",
+		"prefix": "prfn",
+		"body": [
+			"private ${1:whatsTheFunction} ($2): DkResult {",
+			"\t",
+			"}"
+		]
+	},
+	"DkPrivateAsyncFunction": {
+		"scope": "typescript",
+		"prefix": "prfnx",
+		"body": [
+			"private ${1:whatsTheFunction} ($2): Promise<DkResult<$3>> {",
+			"\t",
+			"}"
+		]
+	},
+	"PrivateFunction": {
+		"scope": "typescript",
+		"prefix": "prf",
+		"body": [
+			"private ${1:whatsTheFunction} ($2) {",
+			"\t",
+			"}"
+		]
+	},
+	"PrivateAsyncFunction": {
+		"scope": "typescript",
+		"prefix": "prasf",
+		"body": [
+			"private async ${1:whatsTheFunction} ($2) {",
+			"\t",
+			"}"
+		]
+	},
+	"PrivateAsyncFunctionReturningDkResult": {
+		"scope": "typescript",
+		"prefix": "prasfn",
+		"body": [
+			"private async ${1:whatsTheFunction} ($2): Promise<DkResult$3> {",
+			"\t",
+			"}"
+		]
+	},
+	"DkNestJSRoute": {
+		"scope": "typescript",
+		"prefix": "nroute",
+		"body": [
+			"@UseGuards(DkAuthGuard)",
+			"@Post('$1')",
+			"public async ${2:whatsTheHandler} (",
+			"\t@Session() session: IBSession,",
+			"\t@Body() body: unknown",
+			") {",
+			"\tconst valid = new DkJSONValidator<{}>(body, 'object', [])",
+			"\t\t.acceptIfValid(undefined, this.logger)",
+			"\tif (!valid.ok) return valid",
+			"",
+			"\t",
+			"",
+			"}"
+		]
+	},
+	"DkGuard": {
+		"scope": "typescript",
+		"prefix": "ifnr",
+		"body": [
+			"if (!${1:dkResult}.ok) return ${1:dkResult}",
+			""
+		]
+	},
+	"Param": {
+		"scope": "typescript",
+		"prefix": "nparam",
+		"body": [
+			"@Param('${1:theParam}') ${1:theParam}: string,"
+		]
+	},
+	"NValidation": {
+		"scope": "typescript",
+		"prefix": "nvalidate",
+		"body": [
+			"const payload = new DkJSONValidator<${1:APIType}>(body, 'object', [$2])",
+			"\t.acceptIfValid()",
+			"if (!payload.ok) return payload"
+		]
+	},
+	"NCase": {
+		"scope": "typescript",
+		"prefix": "nncase",
+		"body": [
+			"if (!${1:name}.ok) return ${1:name}",
+			""
+		]
+	},
+	"NPrisma": {
+		"scope": "typescript",
+		"prefix": "nnpriss",
+		"body": [
+			"await this.prisma.wrapResult(this.prisma.${2})",
+			""
+		]
+	},
+	"NReq": {
+		"scope": "typescript",
+		"prefix": "nnreq",
+		"body": [
+			"if (!${1:param}) return r.fail('INVALID_REQUEST')",
+			""
+		]
+	},
+	"NBody": {
+		"scope": "typescript",
+		"prefix": "nbody",
+		"body": "@Body() body: unknown,"
+	}
+}

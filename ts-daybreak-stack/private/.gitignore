@@ -1,0 +1,2 @@
+*.pem
+.server_private_key_passphrase

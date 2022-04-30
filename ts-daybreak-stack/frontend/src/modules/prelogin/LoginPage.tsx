@@ -33,23 +33,16 @@ export const LoginPage: React.FC<PLoginPage> = ({ children }) => {
 		)
 			.then((resp) => {
 				if (resp.ok) {
-					const currProj = sess.findLocalStorageProj(resp.data.user)
-					console.log('setstate', resp.data)
-					sess.setState({ currentUser: resp.data.user, project: currProj, initialised: true })
-					if (currProj) {
-						nav(paths.issueListPage(currProj.id, 'currentAddable'))
-					} else {
-						setTimeout(() => nav(paths.projectsPickerPage()), 20)
-					}
+					sess.setState({ currentUser: resp.data.user, initialised: true })
+					nav(paths.main())
 				} else {
-					console.log({ resp })
 					perfSetTempError(resp.err.msg)
 				}
 			})
 	}
 
 	return <motion.div
-		className='flex flex-col items-center justify-center w-full h-full overflow-auto transition-all bg-indigo-500'
+		className='flex flex-col items-center justify-center w-full h-full overflow-auto transition-all bg-indigo-900'
 		initial={{ opacity: 0 }}
 		animate={{ opacity: 1 }}
 		exit={{ opacity: 0 }}
@@ -63,7 +56,7 @@ export const LoginPage: React.FC<PLoginPage> = ({ children }) => {
 			transition={{ duration: 1 }}
 		>
 			<div className='pt-10 pb-12 mb-3 font-bold text-center'>
-				Week by Week
+				The App
 			</div>
 
 			<input
@@ -94,7 +87,14 @@ export const LoginPage: React.FC<PLoginPage> = ({ children }) => {
 			<AnimatePresence>
 				{
 					err.val
-						? <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className='font-semibold text-center text-red-500'>{ err.val }</motion.div>
+						? <motion.div
+							initial={{ opacity: 0, height: 0 }}
+							animate={{ opacity: 1, height: 'auto' }}
+							exit={{ opacity: 0, height: 0 }}
+							className='font-semibold text-center text-red-500'
+						>
+							{ err.val }
+						</motion.div>
 						: null
 				}
 			</AnimatePresence>

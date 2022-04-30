@@ -6,7 +6,7 @@ import { APIUserSessionResult } from 'lib/model/APIUserSessionResult'
 import { UserService } from 'modules/user/user.service'
 import { AuthService } from './auth.service'
 import { AppSession } from './auth.types'
-import { APIUserSessionData } from '@wbw/common/dto/APIUserSessionData'
+import { APIUserSessionData } from 'common/dto/APIUserSessionData'
 
 @Controller('auth')
 export class AuthController {

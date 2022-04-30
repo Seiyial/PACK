@@ -1,7 +1,5 @@
 import { motion, useAnimation } from 'framer-motion'
 import toaster from 'lib/ui/toaster'
-import { IconEdit, IconList, IconTrendingUp } from 'modules/composer/wbw-slate/icons/Icons'
-import useRelevantIssueLists from 'modules/issue_list/useRelevantIssueLists'
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import paths from './paths'
@@ -12,7 +10,7 @@ export type PNavbar = {
 }
 export const Navbar: React.FC<PNavbar> = ({ matchProjectID }) => {
 
-	const sess = useSession({ ifLoggedInNoProjects: '/projects', ifNotLoggedIn: '/login', ...matchProjectID ? { matchProjectID: { id: matchProjectID } } : {} })
+	const sess = useSession({ ifNotLoggedIn: '/login' })
 	const nav = useNavigate()
 
 	const ac = useAnimation()
@@ -34,16 +32,8 @@ export const Navbar: React.FC<PNavbar> = ({ matchProjectID }) => {
 			<div className='flex items-center px-6 py-3'>
 				<div
 					className='mr-2 text-indigo-500 font-logo transform -translate-y-[1px] cursor-pointer'
-					onClick={() => nav(paths.projectsPickerPage())}
 				>
-					<span className='text-2xl'>W</span>
-					EEK BY
-					{ ' ' }
-					<span className='text-2xl'>W</span>
-					EEK
-				</div>
-				<div className='px-3 py-1 text-lg font-bold transition-colors transform translate-y-[2px] bg-transparent rounded-md cursor-pointer select-none hover:bg-slate-100 active:bg-slate-200'>
-					{ sess.state.project?.title }
+					APP
 				</div>
 			</div>
 

@@ -5,7 +5,7 @@ import { readFileSync } from 'fs'
 import { DkResult, r } from 'lib/daybreak'
 import argon2 from 'argon2'
 import dkInspect from 'lib/daybreak/obj-lib/dkInspect'
-import { User } from '.prisma/client'
+import { User } from '@prisma/client'
 
 
 @Injectable()

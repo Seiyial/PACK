@@ -1,6 +1,6 @@
-import { PrismaClient } from '.prisma/client'
+import { PrismaClient } from '@prisma/client'
 import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common'
-import { PrismaClientInitializationError, PrismaClientKnownRequestError, PrismaClientRustPanicError, PrismaClientUnknownRequestError, PrismaClientValidationError } from '.prisma/client/runtime'
+import { PrismaClientInitializationError, PrismaClientKnownRequestError, PrismaClientRustPanicError, PrismaClientUnknownRequestError, PrismaClientValidationError } from '@prisma/client/runtime'
 import { DkResult, r } from 'lib/daybreak'
 
 @Injectable()

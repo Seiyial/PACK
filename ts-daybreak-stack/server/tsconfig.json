@@ -23,7 +23,7 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@wbw/common/*": [
+      "common/*": [
         "../../common/*"
       ]
     }

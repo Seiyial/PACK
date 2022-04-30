@@ -1,4 +1,4 @@
-import { PrismaClient } from '.prisma/client'
+import { PrismaClient } from '@prisma/client'
 import { Injectable, Logger } from '@nestjs/common'
 import { PrismaSessionStore } from '@quixo3/prisma-session-store'
 import session from 'express-session'

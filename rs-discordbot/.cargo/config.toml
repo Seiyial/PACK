@@ -1,0 +1,3 @@
+# enables $ cargo prisma <command>
+[alias]
+prisma = "run --bin prisma --"
